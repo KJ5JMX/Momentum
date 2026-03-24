@@ -1,0 +1,62 @@
+from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from models import db, Habit
+
+
+habit_bp = Blueprint("habits", __name__, url_prefix="/habits")
+
+
+@habit_bp.route("/", methods=["POST"])
+@jwt_required()
+def create_habit():
+    user_id = int(get_jwt_identity())
+    data = request.get_json()
+    name = data.get("name")
+    category = data.get("category")
+
+    new_habit = Habit(name=name, category=category, user_id=user_id)
+    db.session.add(new_habit)
+    db.session.commit()
+
+    return jsonify({"message": "Habit created successfully", "habit": {"id": new_habit.id, "name": new_habit.name, "category": new_habit.category}}), 201
+
+
+@habit_bp.route("/", methods=["GET"])
+@jwt_required()
+def get_habits():
+    user_id = get_jwt_identity()
+    habits = Habit.query.filter_by(user_id=user_id).all()
+    habits_data = [{"id": habit.id, "name": habit.name, "category": habit.category} for habit in habits]
+    return jsonify({"habits": habits_data}), 200
+
+
+
+@habit_bp.route("/<int:habit_id>", methods=["PUT"])
+@jwt_required()
+def update_habit(habit_id):
+    user_id = get_jwt_identity()
+    habit = Habit.query.filter_by(id=habit_id, user_id=user_id).first()
+    if not habit:
+        return jsonify({"message": "Habit not found"}), 404
+
+    data = request.get_json()
+    habit.name = data.get("name", habit.name)
+    habit.category = data.get("category", habit.category)
+    db.session.commit()
+
+    return jsonify({"message": "Habit updated successfully", "habit": {"id": habit.id, "name": habit.name, "category": habit.category}}), 200
+
+
+
+@habit_bp.route("/<int:habit_id>", methods=["DELETE"])
+@jwt_required()
+def delete_habit(habit_id):
+    user_id = get_jwt_identity()
+    habit = Habit.query.filter_by(id=habit_id, user_id=user_id).first()
+    if not habit:
+        return jsonify({"message": "Habit not found"}), 404
+
+    db.session.delete(habit)
+    db.session.commit()
+
+    return jsonify({"message": "Habit deleted successfully"}), 200      
