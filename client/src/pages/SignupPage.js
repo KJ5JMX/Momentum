@@ -1,37 +1,30 @@
-import React from "react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 
-function LoginPage() {
+function SignupPage() {
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    fetch("http://127.0.0.1:5000/auth/login", {
+    fetch("http://127.0.0.1:5000/auth/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ username, email, password }),
     })
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
-        if (data.access_token) {
-          localStorage.setItem("token", data.access_token);
-          navigate("/dashboard");
-        }
       })
       .catch((error) => {
         console.error("Error:", error);
       });
   };
-
   return (
     <div>
-      <h1>Login to Momentum</h1>
+      <h1>Signup to Momentum</h1>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
@@ -40,15 +33,21 @@ function LoginPage() {
           onChange={(e) => setUsername(e.target.value)}
         />
         <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button type="submit">Login</button>
+        <button type="submit">Signup</button>
       </form>
     </div>
   );
 }
 
-export default LoginPage;
+export default SignupPage;
