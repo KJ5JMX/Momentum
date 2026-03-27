@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useEffect } from "react";
 
-function CreateHabit({ fetchHabits }) {
+function CreateHabit({ fetchHabits, setCreating }) {
   const [habitName, setHabitName] = useState("");
   const [category, setCategory] = useState("");
+  const [description, setDescription] = useState("");
+  const [schedule, setSchedule] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -14,18 +16,22 @@ function CreateHabit({ fetchHabits }) {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ name: habitName, category }),
+      body: JSON.stringify({
+        name: habitName,
+        category,
+        description,
+        schedule,
+      }),
     })
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
         fetchHabits();
-      })
-      .then((data) => {
-        console.log(data);
-        fetchHabits();
         setHabitName("");
         setCategory("");
+        setDescription("");
+        setSchedule("");
+        setCreating(false);
       })
 
       .catch((error) => {
@@ -35,6 +41,7 @@ function CreateHabit({ fetchHabits }) {
 
   return (
     <form onSubmit={handleSubmit}>
+      <h2>Create New Habit</h2>
       <input
         type="text"
         placeholder="What's your new habit?"
@@ -48,7 +55,25 @@ function CreateHabit({ fetchHabits }) {
         <option value="Productivity">Productivity</option>
         <option value="Hobby">Hobby</option>
       </select>
+
+      <textarea
+        placeholder="Description (optional)"
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+      />
+
+      <select value={schedule} onChange={(e) => setSchedule(e.target.value)}>
+        <option value="">Select Schedule</option>
+        <option value="Daily">Daily</option>
+        <option value="Weekly">Weekly</option>
+        <option value="Monthly">Monthly</option>
+        <option value="Yearly">Yearly</option>
+      </select>
+
       <button type="submit">Create Habit</button>
+      <button type="button" onClick={() => setCreating(false)}>
+        Cancel
+      </button>
     </form>
   );
 }
@@ -61,6 +86,7 @@ function DashboardPage() {
   const [entries, setEntries] = useState({});
   const today = new Date().toISOString().split("T")[0];
   const [selectedHabit, setSelectedHabit] = useState(null);
+  const [creating, setCreating] = useState(false);
 
   function fetchEntries(habitId) {
     const token = localStorage.getItem("token");
@@ -170,10 +196,23 @@ function DashboardPage() {
     <>
       <div className="main-content">
         <h1>My Habits</h1>
-        <CreateHabit fetchHabits={fetchHabits} />
+        <button
+          onClick={() => {
+            setCreating(true);
+            setSelectedHabit(null);
+          }}
+        >
+          + Create Habit
+        </button>
         <ul>
           {habits.map((habit) => (
-            <li key={habit.id} onClick={() => setSelectedHabit(habit)}>
+            <li
+              key={habit.id}
+              onClick={() => {
+                setSelectedHabit(habit);
+                setCreating(false);
+              }}
+            >
               {habit.name}
             </li>
           ))}
@@ -181,7 +220,9 @@ function DashboardPage() {
       </div>
 
       <div className="detail-panel">
-        {selectedHabit ? (
+        {creating ? (
+          <CreateHabit fetchHabits={fetchHabits} setCreating={setCreating} />
+        ) : selectedHabit ? (
           <>
             {editingId === selectedHabit.id ? (
               <>

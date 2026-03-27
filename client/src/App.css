@@ -44,4 +44,12 @@
 .detail-panel {
   width: 350px;
   padding: 20px;
+  align-items: center;
+}
+
+.detail-panel form {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  align-items: center;
 }
