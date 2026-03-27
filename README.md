@@ -33,29 +33,31 @@ npm start
 
 The app will be running at `http://localhost:3000`.
 
+## Features
+
+- User signup and login with JWT authentication
+- Create habits with name, category, description, and schedule (daily/weekly/monthly/yearly)
+- Edit and delete habits
+- Mark habits as completed for the day
+- View completion history per habit
+- 3-panel dashboard layout: sidebar navigation, habit list, and detail panel
+- Create habit form opens in the detail panel with cancel support
+
 ## API Endpoints
 
 ### Auth
-- `POST /auth/register` — Create a new account
+
+- `POST /auth/register` — Create a new account (username, email, password)
 - `POST /auth/login` — Log in and receive a JWT token
 
 ### Habits (requires JWT)
-- `POST /habits/` — Create a habit
+
+- `POST /habits/` — Create a habit (name, category, description, schedule)
 - `GET /habits/` — Get all habits for the logged-in user
 - `PUT /habits/<id>` — Update a habit
 - `DELETE /habits/<id>` — Delete a habit
 
 ### Habit Entries (requires JWT)
+
 - `POST /entries/` — Log a habit completion for a date
-- `GET /entries/<id>` — Get a specific habit entry
-
-## Current Status
-
-- [x] User signup and login with JWT authentication
-- [x] Full CRUD for habits
-- [x] Habit entry logging
-- [x] Database models and migrations
-- [ ] React login and signup pages
-- [ ] Dashboard
-- [ ] Streak calculation
-- [ ] Badge/milestone system
+- `GET /entries/habit/<habit_id>` — Get all entries for a specific habit
