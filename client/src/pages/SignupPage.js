@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 function SignupPage() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -17,6 +19,9 @@ function SignupPage() {
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
+        if (data.message === "User registered successfully") {
+          navigate("/login");
+        }
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -46,6 +51,9 @@ function SignupPage() {
         />
         <button type="submit">Signup</button>
       </form>
+      <p>
+        Already have an account? <Link to="/login">Login</Link>
+      </p>
     </div>
   );
 }

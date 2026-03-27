@@ -21,6 +21,13 @@ function CreateHabit({ fetchHabits }) {
         console.log(data);
         fetchHabits();
       })
+      .then((data) => {
+        console.log(data);
+        fetchHabits();
+        setHabitName("");
+        setCategory("");
+      })
+
       .catch((error) => {
         console.error("Error:", error);
       });
@@ -53,6 +60,7 @@ function DashboardPage() {
   const [editedCategory, setEditedCategory] = useState("");
   const [entries, setEntries] = useState({});
   const today = new Date().toISOString().split("T")[0];
+  const [selectedHabit, setSelectedHabit] = useState(null);
 
   function fetchEntries(habitId) {
     const token = localStorage.getItem("token");
@@ -159,17 +167,23 @@ function DashboardPage() {
   }, []);
 
   return (
-    <div>
-      <h1>Welcome to your Dashboard</h1>
-      <CreateHabit fetchHabits={fetchHabits} />
-      <ul>
-        {habits.map((habit) => (
-          <li key={habit.id}>
-            {entries[habit.id] &&
-              entries[habit.id].map((entry) => (
-                <span key={entry.id}>{entry.date}</span>
-              ))}
-            {editingId === habit.id ? (
+    <>
+      <div className="main-content">
+        <h1>My Habits</h1>
+        <CreateHabit fetchHabits={fetchHabits} />
+        <ul>
+          {habits.map((habit) => (
+            <li key={habit.id} onClick={() => setSelectedHabit(habit)}>
+              {habit.name}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="detail-panel">
+        {selectedHabit ? (
+          <>
+            {editingId === selectedHabit.id ? (
               <>
                 <input
                   value={editedName}
@@ -189,20 +203,31 @@ function DashboardPage() {
               </>
             ) : (
               <>
-                {habit.name} - {habit.category}
-                <button onClick={() => handleEdit(habit)}>Edit</button>
-                <button onClick={() => handleDelete(habit.id)}>Delete</button>
-                <button onClick={() => handleComplete(habit.id)}>
-                  {entries[habit.id]?.some((e) => e.date === today) && (
-                    <span>Completed today!</span>
-                  )}
+                <h2>{selectedHabit.name}</h2>
+                <p>Category: {selectedHabit.category}</p>
+                <button onClick={() => handleEdit(selectedHabit)}>Edit</button>
+                <button onClick={() => handleDelete(selectedHabit.id)}>
+                  Delete
                 </button>
+                <button onClick={() => handleComplete(selectedHabit.id)}>
+                  Complete
+                </button>
+                {entries[selectedHabit.id]?.some((e) => e.date === today) && (
+                  <p>Completed today!</p>
+                )}
+                <h3>History</h3>
+                {entries[selectedHabit.id] &&
+                  entries[selectedHabit.id].map((entry) => (
+                    <p key={entry.id}>{entry.date}</p>
+                  ))}
               </>
             )}
-          </li>
-        ))}
-      </ul>
-    </div>
+          </>
+        ) : (
+          <p>Select a habit to see details</p>
+        )}
+      </div>
+    </>
   );
 }
 
