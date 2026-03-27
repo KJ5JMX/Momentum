@@ -13,7 +13,8 @@ from entry_routes import entry_bp
 app = Flask(__name__)
 app.config.from_object(Config)
 
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
+
 db.init_app(app)
 Migrate(app, db)
 app.register_blueprint(auth_bp)
