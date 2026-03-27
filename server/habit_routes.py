@@ -12,13 +12,17 @@ def create_habit():
     user_id = int(get_jwt_identity())
     data = request.get_json()
     name = data.get("name")
+    description = data.get("description")
+    schedule = data.get("schedule")
     category = data.get("category")
 
-    new_habit = Habit(name=name, category=category, user_id=user_id)
+    new_habit = Habit(name=name, category=category, description=description, schedule=schedule, user_id=user_id)
     db.session.add(new_habit)
     db.session.commit()
 
-    return jsonify({"message": "Habit created successfully", "habit": {"id": new_habit.id, "name": new_habit.name, "category": new_habit.category}}), 201
+    return jsonify({"message": "Habit created successfully", "habit": {"id": new_habit.id, "name": new_habit.name, "description": new_habit.description, "schedule": new_habit.schedule, "category": new_habit.category}}), 201
+
+
 
 
 @habit_bp.route("/", methods=["GET"])
@@ -26,7 +30,7 @@ def create_habit():
 def get_habits():
     user_id = get_jwt_identity()
     habits = Habit.query.filter_by(user_id=user_id).all()
-    habits_data = [{"id": habit.id, "name": habit.name, "category": habit.category} for habit in habits]
+    habits_data = [{"id": habit.id, "name": habit.name, "category": habit.category, "description": habit.description, "schedule": habit.schedule} for habit in habits]
     return jsonify({"habits": habits_data}), 200
 
 
@@ -41,10 +45,12 @@ def update_habit(habit_id):
 
     data = request.get_json()
     habit.name = data.get("name", habit.name)
+    habit.description = data.get("description", habit.description)
+    habit.schedule = data.get("schedule", habit.schedule)
     habit.category = data.get("category", habit.category)
     db.session.commit()
 
-    return jsonify({"message": "Habit updated successfully", "habit": {"id": habit.id, "name": habit.name, "category": habit.category}}), 200
+    return jsonify({"message": "Habit updated successfully", "habit": {"id": habit.id, "name": habit.name, "description": habit.description, "schedule": habit.schedule, "category": habit.category}}), 200
 
 
 

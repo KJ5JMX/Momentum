@@ -18,6 +18,8 @@ class Habit(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
     category = db.Column(db.String)
+    description = db.Column(db.String)
+    schedule = db.Column(db.String)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
 
     entries = db.relationship("HabitEntry", backref="habit", cascade="all, delete-orphan")
@@ -28,5 +30,7 @@ class HabitEntry(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.Date, nullable=False)
     habit_id = db.Column(db.Integer, db.ForeignKey("habits.id"), nullable=False)
+
+
 
     
