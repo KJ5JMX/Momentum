@@ -41,5 +41,12 @@ def get_entry(entry_id):
 
     return jsonify({"entry": {"id": entry.id, "date": entry.date.isoformat(), "habit_id": entry.habit_id}}), 200
 
-
-
+@entry_bp.route("/habit/<int:habit_id>", methods=["GET"])
+@jwt_required()
+def get_entries_by_habit(habit_id):
+    user_id = get_jwt_identity()
+    habit = Habit.query.filter_by(id=habit_id, user_id=user_id).first()
+    if not habit:
+        return jsonify({"message": "Habit not found"}), 404
+    entries = HabitEntry.query.filter_by(habit_id=habit_id).all()
+    return jsonify({"entries": [{"id": entry.id, "date": entry.date.isoformat(), "habit_id": entry.habit_id} for entry in entries]}), 200
