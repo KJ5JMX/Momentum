@@ -6,9 +6,26 @@ function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const [error, setError] = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!username) {
+      setError("Please enter a username");
+      return;
+    }
+    setError(null);
+
+    if (!email) {
+      setError("Please enter an email");
+      return;
+    }
+
+    if (!password) {
+      setError("Please enter a password");
+      return;
+    }
+
     fetch("http://127.0.0.1:5000/auth/register", {
       method: "POST",
       headers: {
@@ -21,15 +38,38 @@ function SignupPage() {
         console.log(data);
         if (data.message === "User registered successfully") {
           navigate("/login");
+        } else {
+          setError(data.message || "Signup failed. Please try again.");
         }
       })
       .catch((error) => {
         console.error("Error:", error);
+        setError("An error occurred. Please try again.");
       });
   };
   return (
     <div>
       <h1>Signup to Momentum</h1>
+      {error && (
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            backgroundColor: "#333",
+            color: "white",
+            padding: "20px 30px",
+            borderRadius: "10px",
+            textAlign: "center",
+            zIndex: 10,
+          }}
+        >
+          <p>{error}</p>
+          <button onClick={() => setError("")}>OK</button>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit}>
         <input
           type="text"
