@@ -49,51 +49,42 @@ function SignupPage() {
   };
   return (
     <div>
-      <h1>Signup to Momentum</h1>
-      {error && (
-        <div
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            backgroundColor: "#333",
-            color: "white",
-            padding: "20px 30px",
-            borderRadius: "10px",
-            textAlign: "center",
-            zIndex: 10,
-          }}
-        >
-          <p>{error}</p>
-          <button onClick={() => setError("")}>OK</button>
-        </div>
-      )}
+      <div className="auth-page">
+        <div className="auth-card">
+          <h1>Signup to Momentum</h1>
+          {error && (
+            <div className="error-modal">
+              <p>{error}</p>
+              <button onClick={() => setError("")}>OK</button>
+            </div>
+          )}
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button type="submit">Signup</button>
-      </form>
-      <p>
-        Already have an account? <Link to="/login">Login</Link>
-      </p>
+          <form onSubmit={handleSubmit}>
+            <input
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button type="submit">Signup</button>
+          </form>
+          <p>
+            Already have an account? <Link to="/login">Login</Link>
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
