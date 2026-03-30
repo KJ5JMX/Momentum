@@ -57,20 +57,7 @@ function CreateHabit({ fetchHabits, setCreating }) {
     <form onSubmit={handleSubmit}>
       <h2>Create New Habit</h2>
       {error && (
-        <div
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            backgroundColor: "#333",
-            color: "white",
-            padding: "20px 30px",
-            borderRadius: "10px",
-            textAlign: "center",
-            zIndex: 10,
-          }}
-        >
+        <div className="error-modal">
           <p>{error}</p>
           <button onClick={() => setError("")}>OK</button>
         </div>
@@ -118,6 +105,8 @@ function DashboardPage() {
   const [editedName, setEditedName] = useState("");
   const [editedCategory, setEditedCategory] = useState("");
   const [entries, setEntries] = useState({});
+  const [editedDescription, setEditedDescription] = useState("");
+  const [editedSchedule, setEditedSchedule] = useState("");
   const today = new Date().toISOString().split("T")[0];
   const [selectedHabit, setSelectedHabit] = useState(null);
   const [creating, setCreating] = useState(false);
@@ -164,6 +153,8 @@ function DashboardPage() {
     setEditingId(habit.id);
     setEditedName(habit.name);
     setEditedCategory(habit.category);
+    setEditedDescription(habit.description);
+    setEditedSchedule(habit.schedule);
   }
   function handleUpdate() {
     const token = localStorage.getItem("token");
@@ -173,7 +164,12 @@ function DashboardPage() {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ name: editedName, category: editedCategory }),
+      body: JSON.stringify({
+        name: editedName,
+        category: editedCategory,
+        description: editedDescription,
+        schedule: editedSchedule,
+      }),
     })
       .then((response) => response.json())
       .then((data) => {
@@ -228,6 +224,7 @@ function DashboardPage() {
       .then((data) => {
         console.log(data);
         fetchHabits();
+        setSelectedHabit(null);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -244,36 +241,33 @@ function DashboardPage() {
   return (
     <>
       {error && (
-        <div
-          style={{
-            position: "fixed",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            backgroundColor: "#333",
-            color: "white",
-            padding: "20px 30px",
-            borderRadius: "10px",
-            textAlign: "center",
-            zIndex: 10,
-          }}
-        >
+        <div className="error-modal">
           <p>{error}</p>
           <button onClick={() => setError(null)}>OK</button>
         </div>
       )}
 
-      <div className="main-content">
-        <h1>My Habits</h1>
-
-        <button
-          onClick={() => {
-            setCreating(true);
+      <div
+        className="main-content"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) {
             setSelectedHabit(null);
-          }}
-        >
-          + Create Habit
-        </button>
+            setCreating(false);
+          }
+        }}
+      >
+        <div className="panel-header">
+          <h1>My Habits</h1>
+
+          <button
+            onClick={() => {
+              setCreating(true);
+              setSelectedHabit(null);
+            }}
+          >
+            + Create Habit
+          </button>
+        </div>
         <ul>
           {habits.map((habit) => (
             <li
@@ -295,11 +289,20 @@ function DashboardPage() {
         ) : selectedHabit ? (
           <>
             {editingId === selectedHabit.id ? (
-              <>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleUpdate();
+                }}
+              >
+                <h2>Edit Habit</h2>
+                <h3>Name</h3>
                 <input
                   value={editedName}
                   onChange={(e) => setEditedName(e.target.value)}
                 />
+                <h3>Category</h3>
+
                 <select
                   value={editedCategory}
                   onChange={(e) => setEditedCategory(e.target.value)}
@@ -309,33 +312,63 @@ function DashboardPage() {
                   <option value="Productivity">Productivity</option>
                   <option value="Hobby">Hobby</option>
                 </select>
-                <button onClick={() => handleUpdate()}>Save</button>
-                <button onClick={() => setEditingId(null)}>Cancel</button>
-              </>
+                <h3>Description</h3>
+                <textarea
+                  value={editedDescription}
+                  onChange={(e) => setEditedDescription(e.target.value)}
+                  placeholder="Description (optional)"
+                />
+                <h3>Schedule</h3>
+                <select
+                  value={editedSchedule}
+                  onChange={(e) => setEditedSchedule(e.target.value)}
+                >
+                  <option value="">Select Schedule</option>
+                  <option value="Daily">Daily</option>
+                  <option value="Weekly">Weekly</option>
+                  <option value="Monthly">Monthly</option>
+                  <option value="Yearly">Yearly</option>
+                </select>
+                <button type="submit">Save</button>
+                <button type="button" onClick={() => setEditingId(null)}>
+                  Cancel
+                </button>
+              </form>
             ) : (
-              <>
-                <h2>{selectedHabit.name}</h2>
+              <div className="detail-view">
+                <div className="panel-header">
+                  <h2>{selectedHabit.name}</h2>
+                  <button onClick={() => handleEdit(selectedHabit)}>
+                    Edit
+                  </button>
+                </div>
                 <p>Category: {selectedHabit.category}</p>
-                <button onClick={() => handleEdit(selectedHabit)}>Edit</button>
-                <button onClick={() => handleDelete(selectedHabit.id)}>
-                  Delete
-                </button>
-                <button onClick={() => handleComplete(selectedHabit.id)}>
-                  Complete
-                </button>
-                {entries[selectedHabit.id]?.some((e) => e.date === today) && (
-                  <p>Completed today!</p>
-                )}
                 <h3>Description</h3>
                 <p>{selectedHabit.description || "No description provided."}</p>
                 <h3>Schedule</h3>
                 <p>{selectedHabit.schedule || "No schedule provided."}</p>
+                {entries[selectedHabit.id]?.some((e) => e.date === today) && (
+                  <p className="completed-today">Completed today!</p>
+                )}
+
+                <button
+                  className="complete-btn"
+                  onClick={() => handleComplete(selectedHabit.id)}
+                >
+                  Complete
+                </button>
                 <h3>History</h3>
                 {entries[selectedHabit.id] &&
                   entries[selectedHabit.id].map((entry) => (
                     <p key={entry.id}>{entry.date}</p>
                   ))}
-              </>
+                <button
+                  className="delete-btn"
+                  onClick={() => handleDelete(selectedHabit.id)}
+                >
+                  Delete
+                </button>
+              </div>
             )}
           </>
         ) : (

@@ -1,58 +1,368 @@
+/* ---- Layout ---- */
 .app-layout {
   display: flex;
   height: 100vh;
+  background-color: #f7f7f5;
+  font-family: "Segoe UI", sans-serif;
+  color: #333;
 }
 
+/* ---- Sidebar ---- */
 .sidebar {
-  width: 250px;
-  background-color: #f5f5f5;
+  width: 220px;
+  background-color: #ffffff;
   padding: 20px;
-}
-
-.main-content {
-  flex: 1;
-  padding: 20px;
-}
-.sidebar a,
-.sidebar button {
-  display: block;
-  margin: 10px 0;
-}
-.app-layout {
+  border-right: 1px solid #e5e5e5;
   display: flex;
-  height: 100vh;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-.sidebar {
-  width: 200px;
-  background-color: #f5f5f5;
-  padding: 20px;
+.sidebar h2 {
+  font-size: 22px;
+  margin-bottom: 30px;
 }
 
-.sidebar a,
+.sidebar a {
+  display: block;
+  margin: 8px 0;
+  text-decoration: none;
+  color: #333;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.sidebar a:hover {
+  background-color: #f0f0ee;
+}
+
 .sidebar button {
   display: block;
-  margin: 10px 0;
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  padding: 8px 12px;
+  font-size: 14px;
+  text-align: left;
+  width: 100%;
+  border-radius: 8px;
 }
 
+.sidebar button:hover {
+  background-color: #f0f0ee;
+  color: #333;
+}
+
+/* ---- Middle Panel  ---- */
 .main-content {
   flex: 1;
-  padding: 20px;
-  border-right: 1px solid #ddd;
+  padding: 30px;
+  border-right: 1px solid #e5e5e5;
+  overflow-y: auto;
 }
 
+.main-content h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.main-content ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.main-content li {
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 15px;
+  border: 1px solid #ececec;
+}
+
+.main-content li:hover {
+  background-color: #f0f0ee;
+}
+
+.main-content > div > button {
+  background-color: #3eb247;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.main-content > div > button:hover {
+  background-color: rgb(35, 139, 44);
+}
+
+.main-content > button:hover {
+  border-color: #999;
+  color: #333;
+}
+
+/* ---- Detail Panel ---- */
 .detail-panel {
   width: 350px;
-  padding: 20px;
-  align-items: center;
+  padding: 25px;
+  background-color: #ffffff;
+  overflow-y: auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
+.detail-panel h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.detail-panel h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  margin-top: 20px;
+  margin-bottom: 6px;
+}
+
+.detail-panel p {
+  font-size: 14px;
+  color: #555;
+  margin: 4px 0;
+}
+
+.detail-panel button {
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #ffffff;
+  cursor: pointer;
+  font-size: 13px;
+  margin-right: 8px;
+  margin-top: 8px;
+}
+
+.detail-panel button:hover {
+  background-color: #f0f0ee;
+}
+
+/* ---- Detail Panel Form (Create Habit) ---- */
 .detail-panel form {
   display: flex;
   flex-direction: column;
-  gap: 25px;
+  gap: 16px;
+}
+
+.detail-panel form input,
+.detail-panel form textarea,
+.detail-panel form select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  background-color: #fafafa;
+  box-sizing: border-box;
+}
+
+.detail-panel form input:focus,
+.detail-panel form textarea:focus,
+.detail-panel form select:focus {
+  outline: none;
+  border-color: #aaa;
+}
+
+.detail-panel form textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.detail-panel form button {
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.detail-panel form button[type="submit"] {
+  background-color: #3eb247;
+  color: white;
+  border: none;
+}
+
+.detail-panel form button[type="submit"]:hover {
+  background-color: rgb(35, 139, 44);
+}
+
+.detail-panel form button[type="button"] {
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  color: #666;
+}
+
+/* ---- Login & Signup Pages ---- */
+.auth-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f7f7f5;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.auth-card {
+  background-color: #ffffff;
+  padding: 40px;
+  border-radius: 12px;
+  width: 360px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+.auth-card h1 {
+  font-size: 24px;
+  margin-bottom: 24px;
+  color: #333;
+}
+
+.auth-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.auth-card input {
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: #fafafa;
+}
+
+.auth-card input:focus {
+  outline: none;
+  border-color: #aaa;
+}
+
+.auth-card button {
+  padding: 10px;
+  background-color: #3eb247;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+.auth-card button:hover {
+  background-color: rgb(35, 139, 44);
+}
+
+.auth-card p {
+  margin-top: 16px;
+  font-size: 13px;
+  color: #888;
+}
+
+.auth-card a {
+  color: #3eb247;
+  text-decoration: none;
+}
+
+.auth-card a:hover {
+  text-decoration: underline;
+}
+.complete-btn {
+  background-color: #2d8a37 !important;
+  color: white !important;
+  border: none !important;
+  width: 100%;
+  padding: 10px !important;
+  margin-top: 20px !important;
+}
+
+.delete-btn {
+  background-color: #fff !important;
+  color: #e05555 !important;
+  border: 1px solid #e05555 !important;
+  width: 100%;
+  padding: 10px !important;
+  margin-top: auto !important;
+}
+.sidebar a.active {
+  background-color: #f0f0ee;
+}
+/* ---- Error Modal ---- */
+.error-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #333;
+  color: white;
+  padding: 20px 30px;
+  border-radius: 10px;
+  text-align: center;
+  z-index: 10;
+}
+
+/* ---- Navbar ---- */
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.sidebar-logo img {
+  width: 50px;
+  height: 50px;
+}
+
+.sidebar-logo h2 {
+  font-size: 24px;
+  margin: 0;
+}
+
+.sidebar a .nav-icon {
+  font-size: 14px;
+}
+
+.sidebar a .nav-text {
+  font-size: 20px;
+}
+
+/* ---- Panel Headers ---- */
+.panel-header {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
 }
-.detail-panel {
-  position: relative;
+
+/* ---- Detail View ---- */
+.detail-view {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.completed-today {
+  background-color: #e8f5e9;
+  color: #2d8a37;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-align: center;
 }
