@@ -20,8 +20,11 @@ def create_entry():
     entry_date = date.fromisoformat(data.get("date"))
     habit_id = data.get("habit_id")
     habit = Habit.query.filter_by(id=habit_id, user_id=user_id).first()
+    existing = HabitEntry.query.filter_by(habit_id=habit_id, date=entry_date).first()
     if not habit:
         return jsonify({"message": "Habit not found"}), 404
+    if existing:
+        return jsonify({"message": "Habit entry already exists for this date"}), 400
     new_entry = HabitEntry(date=entry_date, habit_id=habit_id)
     db.session.add(new_entry)
     db.session.commit()

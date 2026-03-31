@@ -1,4 +1,3 @@
-/* ---- Layout ---- */
 .app-layout {
   display: flex;
   height: 100vh;
@@ -7,7 +6,6 @@
   color: #333;
 }
 
-/* ---- Sidebar ---- */
 .sidebar {
   width: 220px;
   background-color: #ffffff;
@@ -109,7 +107,6 @@
   color: #333;
 }
 
-/* ---- Detail Panel ---- */
 .detail-panel {
   width: 350px;
   padding: 25px;
@@ -156,7 +153,6 @@
   background-color: #f0f0ee;
 }
 
-/* ---- Detail Panel Form (Create Habit) ---- */
 .detail-panel form {
   display: flex;
   flex-direction: column;
@@ -211,7 +207,6 @@
   color: #666;
 }
 
-/* ---- Login & Signup Pages ---- */
 .auth-page {
   display: flex;
   justify-content: center;
@@ -304,7 +299,7 @@
 .sidebar a.active {
   background-color: #f0f0ee;
 }
-/* ---- Error Modal ---- */
+
 .error-modal {
   position: fixed;
   top: 50%;
@@ -317,8 +312,10 @@
   text-align: center;
   z-index: 10;
 }
+.error-modal p {
+  color: white;
+}
 
-/* ---- Navbar ---- */
 .sidebar-logo {
   display: flex;
   align-items: center;
@@ -344,14 +341,12 @@
   font-size: 20px;
 }
 
-/* ---- Panel Headers ---- */
 .panel-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-/* ---- Detail View ---- */
 .detail-view {
   display: flex;
   flex-direction: column;
