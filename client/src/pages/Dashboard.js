@@ -187,6 +187,10 @@ function DashboardPage() {
 
   function handleComplete(id) {
     const token = localStorage.getItem("token");
+    if (entries[id]?.some((e) => e.date === today)) {
+      setError("You've already completed this habit today!");
+      return;
+    }
     fetch(`http://127.0.0.1:5000/entries/`, {
       method: "POST",
       headers: {
