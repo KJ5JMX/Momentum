@@ -23,7 +23,7 @@ function CreateHabit({ fetchHabits, setCreating }) {
     setError(null);
 
     const token = localStorage.getItem("token");
-    fetch("http://127.0.0.1:5000/habits/", {
+    fetch("/habits/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -114,7 +114,7 @@ function DashboardPage() {
 
   function fetchEntries(habitId) {
     const token = localStorage.getItem("token");
-    fetch(`http://127.0.0.1:5000/entries/habit/${habitId}`, {
+    fetch(`/entries/habit/${habitId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -131,7 +131,7 @@ function DashboardPage() {
 
   function fetchHabits() {
     const token = localStorage.getItem("token");
-    fetch("http://127.0.0.1:5000/habits/", {
+    fetch("/habits/", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -158,7 +158,7 @@ function DashboardPage() {
   }
   function handleUpdate() {
     const token = localStorage.getItem("token");
-    fetch(`http://127.0.0.1:5000/habits/${editingId}`, {
+    fetch(`/habits/${editingId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -191,7 +191,7 @@ function DashboardPage() {
       setError("You've already completed this habit today!");
       return;
     }
-    fetch(`http://127.0.0.1:5000/entries/`, {
+    fetch(`/entries/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -218,7 +218,7 @@ function DashboardPage() {
 
   function handleDelete(id) {
     const token = localStorage.getItem("token");
-    fetch(`http://127.0.0.1:5000/habits/${id}`, {
+    fetch(`/habits/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,
