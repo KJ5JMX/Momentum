@@ -29,9 +29,12 @@ def create_habit():
 @jwt_required()
 def get_habits():
     user_id = get_jwt_identity()
-    habits = Habit.query.filter_by(user_id=user_id).all()
-    habits_data = [{"id": habit.id, "name": habit.name, "category": habit.category, "description": habit.description, "schedule": habit.schedule} for habit in habits]
-    return jsonify({"habits": habits_data}), 200
+    page = request.args.get("page", 1, type=int)
+    per_page = request.args.get("per_page", 10, type=int)
+    pagination = Habit.query.filter_by(user_id=user_id).paginate(page=page, per_page=per_page, error_out=False)
+    habits_data = [{"id": habit.id, "name": habit.name, "category": habit.category, "description": habit.description, "schedule": habit.schedule} for habit in pagination.items]
+    return jsonify({"habits": habits_data, "page": pagination.page, "per_page": pagination.per_page, "total": pagination.total, "pages": pagination.pages}), 200
+
 
 
 

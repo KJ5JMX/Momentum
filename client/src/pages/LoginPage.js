@@ -29,7 +29,6 @@ function LoginPage() {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         if (data.access_token) {
           localStorage.setItem("token", data.access_token);
           navigate("/dashboard");
