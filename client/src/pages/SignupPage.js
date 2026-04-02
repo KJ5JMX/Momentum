@@ -35,7 +35,6 @@ function SignupPage() {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         if (data.message === "User registered successfully") {
           navigate("/login");
         } else {

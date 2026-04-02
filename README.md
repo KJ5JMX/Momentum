@@ -6,7 +6,7 @@ A habit and streak reinforcement app that helps users build consistency by track
 
 - **Backend:** Flask, SQLAlchemy, Flask-Migrate, Flask-JWT-Extended, Flask-CORS
 - **Frontend:** React, React Router, React Icons
-- **Database:** SQLite
+- **Database:** PostgreSQL
 - **Auth:** JWT (JSON Web Tokens)
 
 ## Setup
@@ -45,7 +45,15 @@ The app will be running at `http://localhost:3000`.
 - Create and edit habit forms open in the detail panel
 - Error handling with modal popups across all forms and API calls
 - Input validation for empty fields, duplicate usernames, and invalid credentials
+- Streak tracking with visual 7-day grid (Sunday-Saturday)
+- Badge system for milestones (First Day, 1 Week, 2 Weeks, 1 Month, 3 Months, 6 Months, 1 Year)
+- Paginated habit list with Next/Previous navigation
+- Automatic redirect to login on JWT expiration
 - Clean, responsive UI with consistent styling
+
+## Live Demo
+
+[https://thenobodyprojects.com](https://thenobodyprojects.com)
 
 ## API Endpoints
 

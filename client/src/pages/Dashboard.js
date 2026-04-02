@@ -1,5 +1,14 @@
 import { useState } from "react";
 import { useEffect } from "react";
+import {
+  FiZap,
+  FiTrendingUp,
+  FiSun,
+  FiStar,
+  FiShield,
+  FiAward,
+  FiGift,
+} from "react-icons/fi";
 
 function CreateHabit({ fetchHabits, setCreating }) {
   const [habitName, setHabitName] = useState("");
@@ -37,8 +46,7 @@ function CreateHabit({ fetchHabits, setCreating }) {
       }),
     })
       .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
+      .then(() => {
         fetchHabits();
         setHabitName("");
         setCategory("");
@@ -111,15 +119,28 @@ function DashboardPage() {
   const [selectedHabit, setSelectedHabit] = useState(null);
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(12);
+  const [totalPages, setTotalPages] = useState(1);
+
+  function authFetch(url, options) {
+    return fetch(url, options).then((response) => {
+      if (response.status === 401) {
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+        return;
+      }
+      return response.json();
+    });
+  }
 
   function fetchEntries(habitId) {
     const token = localStorage.getItem("token");
-    fetch(`http://127.0.0.1:5000/entries/habit/${habitId}`, {
+    authFetch(`http://127.0.0.1:5000/entries/habit/${habitId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
-      .then((response) => response.json())
       .then((data) => {
         setEntries((prevEntries) => ({
           ...prevEntries,
@@ -131,15 +152,18 @@ function DashboardPage() {
 
   function fetchHabits() {
     const token = localStorage.getItem("token");
-    fetch("http://127.0.0.1:5000/habits/", {
-      headers: {
-        Authorization: `Bearer ${token}`,
+    authFetch(
+      `http://127.0.0.1:5000/habits/?page=${page}&per_page=${perPage}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       },
-    })
-      .then((response) => response.json())
+    )
       .then((data) => {
         setHabits(data.habits);
-        data.habits.forEach((habit) => fetchEntries(habit.id));
+        setTotalPages(data.pages);
+        (data.habits || []).forEach((habit) => fetchEntries(habit.id));
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -158,7 +182,7 @@ function DashboardPage() {
   }
   function handleUpdate() {
     const token = localStorage.getItem("token");
-    fetch(`http://127.0.0.1:5000/habits/${editingId}`, {
+    authFetch(`http://127.0.0.1:5000/habits/${editingId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -171,9 +195,7 @@ function DashboardPage() {
         schedule: editedSchedule,
       }),
     })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
+      .then(() => {
         fetchHabits();
         setEditingId(null);
       })
@@ -191,7 +213,7 @@ function DashboardPage() {
       setError("You've already completed this habit today!");
       return;
     }
-    fetch(`http://127.0.0.1:5000/entries/`, {
+    authFetch(`http://127.0.0.1:5000/entries/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -202,9 +224,7 @@ function DashboardPage() {
         date: new Date().toISOString().split("T")[0],
       }),
     })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
+      .then(() => {
         fetchHabits();
         fetchEntries(id);
       })
@@ -216,17 +236,48 @@ function DashboardPage() {
       });
   }
 
+  function getStreak(habitId) {
+    const habitEntries = entries[habitId] || [];
+    const dates = habitEntries.map((e) => e.date).sort();
+    if (dates.length === 0) return 0;
+    let streak = 1;
+    for (let i = dates.length - 1; i > 0; i--) {
+      const curr = new Date(dates[i]);
+      const prev = new Date(dates[i - 1]);
+      const diff = (curr - prev) / (1000 * 60 * 60 * 24);
+      if (diff === 1) {
+        streak++;
+      } else {
+        break;
+      }
+    }
+    return streak;
+  }
+
+  function getBadges(habitId) {
+    const streak = getStreak(habitId);
+    const total = (entries[habitId] || []).length;
+    const badges = [];
+    if (total >= 1) badges.push({ name: "First Day", icon: <FiZap /> });
+    if (streak >= 7) badges.push({ name: "1 Week", icon: <FiTrendingUp /> });
+    if (streak >= 14) badges.push({ name: "2 Weeks", icon: <FiSun /> });
+    if (streak >= 30) badges.push({ name: "1 Month", icon: <FiStar /> });
+    if (streak >= 90) badges.push({ name: "3 Months", icon: <FiShield /> });
+    if (streak >= 180) badges.push({ name: "6 Months", icon: <FiAward /> });
+    if (streak >= 365) badges.push({ name: "1 Year", icon: <FiGift /> });
+
+    return badges;
+  }
+
   function handleDelete(id) {
     const token = localStorage.getItem("token");
-    fetch(`http://127.0.0.1:5000/habits/${id}`, {
+    authFetch(`http://127.0.0.1:5000/habits/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
+      .then(() => {
         fetchHabits();
         setSelectedHabit(null);
       })
@@ -240,7 +291,7 @@ function DashboardPage() {
 
   useEffect(() => {
     fetchHabits();
-  }, []);
+  }, [page]);
 
   return (
     <>
@@ -276,6 +327,7 @@ function DashboardPage() {
           {habits.map((habit) => (
             <li
               key={habit.id}
+              className={selectedHabit?.id === habit.id ? "selected" : ""}
               onClick={() => {
                 setSelectedHabit(habit);
                 setCreating(false);
@@ -285,8 +337,18 @@ function DashboardPage() {
             </li>
           ))}
         </ul>
+        <div className="pagination-controls">
+          {page > 1 && (
+            <button onClick={() => setPage(page - 1)}>Previous</button>
+          )}
+          <span>
+            Page {page} of {totalPages}
+          </span>
+          {page < totalPages && (
+            <button onClick={() => setPage(page + 1)}>Next</button>
+          )}
+        </div>
       </div>
-
       <div className="detail-panel">
         {creating ? (
           <CreateHabit fetchHabits={fetchHabits} setCreating={setCreating} />
@@ -351,9 +413,11 @@ function DashboardPage() {
                 <p>{selectedHabit.description || "No description provided."}</p>
                 <h3>Schedule</h3>
                 <p>{selectedHabit.schedule || "No schedule provided."}</p>
-                {entries[selectedHabit.id]?.some((e) => e.date === today) && (
-                  <p className="completed-today">Completed today!</p>
-                )}
+                <div className="completed-today-wrapper">
+                  {entries[selectedHabit.id]?.some((e) => e.date === today) && (
+                    <p className="completed-today">Completed today!</p>
+                  )}
+                </div>
 
                 <button
                   className="complete-btn"
@@ -361,11 +425,47 @@ function DashboardPage() {
                 >
                   Complete
                 </button>
-                <h3>History</h3>
-                {entries[selectedHabit.id] &&
-                  entries[selectedHabit.id].map((entry) => (
-                    <p key={entry.id}>{entry.date}</p>
+
+                <h3>This Week</h3>
+                <div className="streak-grid">
+                  {(() => {
+                    const now = new Date();
+                    const sunday = new Date(now);
+                    sunday.setDate(now.getDate() - now.getDay());
+                    const days = ["S", "M", "T", "W", "T", "F", "S"];
+                    return days.map((day, i) => {
+                      const d = new Date(sunday);
+                      d.setDate(sunday.getDate() + i);
+                      const dateStr = d.toISOString().split("T")[0];
+                      const completed = entries[selectedHabit.id]?.some(
+                        (e) => e.date === dateStr,
+                      );
+                      return (
+                        <div
+                          key={i}
+                          className={`streak-day ${completed ? "completed" : ""}`}
+                        >
+                          {day}
+                        </div>
+                      );
+                    });
+                  })()}
+                </div>
+                <h3>Current Streak</h3>
+                <p>{getStreak(selectedHabit.id)} days</p>
+
+                <h3>Badges</h3>
+                <div className="badge-grid">
+                  {getBadges(selectedHabit.id).map((badge) => (
+                    <div key={badge.name} className="badge">
+                      {badge.icon} {badge.name}
+                    </div>
                   ))}
+                  {getBadges(selectedHabit.id).length === 0 && (
+                    <p>Complete your first day to earn a badge!</p>
+                  )}
+                </div>
+
                 <button
                   className="delete-btn"
                   onClick={() => handleDelete(selectedHabit.id)}

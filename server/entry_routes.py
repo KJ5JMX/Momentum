@@ -37,12 +37,11 @@ def create_entry():
 @entry_bp.route("/<int:entry_id>", methods=["GET"])
 @jwt_required()
 def get_entry(entry_id):
-    user_id = get_jwt_identity()
-    entry = HabitEntry.query.filter_by(id=entry_id).first()
-    if not entry or entry.habit.user_id != user_id:
-        return jsonify({"message": "Habit entry not found"}), 404
+        entry = HabitEntry.query.filter_by(id=entry_id).first()
+        if not entry or entry.habit.user_id != int(get_jwt_identity()):
+                return jsonify({"message": "Habit entry not found"}), 404
+        return jsonify({"entry": {"id": entry.id, "date": entry.date.isoformat(), "habit_id": entry.habit_id}}), 200
 
-    return jsonify({"entry": {"id": entry.id, "date": entry.date.isoformat(), "habit_id": entry.habit_id}}), 200
 
 @entry_bp.route("/habit/<int:habit_id>", methods=["GET"])
 @jwt_required()
@@ -51,5 +50,5 @@ def get_entries_by_habit(habit_id):
     habit = Habit.query.filter_by(id=habit_id, user_id=user_id).first()
     if not habit:
         return jsonify({"message": "Habit not found"}), 404
-    entries = HabitEntry.query.filter_by(habit_id=habit_id).all()
-    return jsonify({"entries": [{"id": entry.id, "date": entry.date.isoformat(), "habit_id": entry.habit_id} for entry in entries]}), 200
+    entries = HabitEntry.query.filter_by(habit_id=habit_id).paginate(page=request.args.get("page", 1, type=int), per_page=request.args.get("per_page", 10, type=int), error_out=False)
+    return jsonify({"entries": [{"id": entry.id, "date": entry.date.isoformat(), "habit_id": entry.habit_id} for entry in entries.items], "page": entries.page, "per_page": entries.per_page, "total": entries.total, "pages": entries.pages}), 200
