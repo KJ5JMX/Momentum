@@ -3,6 +3,7 @@ __pycache__/
 *.pyc
 server/venv/
 server/app.db
+server/instance/
 
 # React
 client/node_modules/
