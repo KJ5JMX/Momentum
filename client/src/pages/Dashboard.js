@@ -198,6 +198,13 @@ function DashboardPage() {
       .then(() => {
         fetchHabits();
         setEditingId(null);
+        setSelectedHabit({
+          ...selectedHabit,
+          name: editedName,
+          category: editedCategory,
+          description: editedDescription,
+          schedule: editedSchedule,
+        });
       })
       .catch((error) => {
         console.error("Error:", error);
